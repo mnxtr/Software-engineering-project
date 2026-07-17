@@ -1,7 +1,3 @@
-Here's the complete, beautifully formatted `README.md` ready to use:
-
-```markdown
-<div align="center">
 
 # 🍽️ NSU Companion
 ### *Smart Cafeteria & Pre-Ordering System*

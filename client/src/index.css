@@ -588,6 +588,33 @@ body {
   margin-bottom: 20px;
 }
 
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 @media (max-width: 768px) {
   .cart-page {
     grid-template-columns: 1fr;
@@ -596,10 +623,29 @@ body {
   .navbar {
     flex-direction: column;
     gap: 15px;
+    padding: 12px 15px;
   }
   
   .navbar-links {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 12px;
+  }
+  
+  .menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  
+  .admin-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .admin-table {
+    font-size: 0.85rem;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 12px;
   }
 }

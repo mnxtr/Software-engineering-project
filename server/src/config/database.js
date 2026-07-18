@@ -39,6 +39,8 @@ export function initializeDatabase() {
         status TEXT DEFAULT 'pending',
         paymentMethod TEXT,
         paymentStatus TEXT DEFAULT 'unpaid',
+        token TEXT,
+        estimatedMinutes INTEGER DEFAULT 15,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (userId) REFERENCES users(id)
       )
@@ -53,6 +55,29 @@ export function initializeDatabase() {
         price REAL NOT NULL,
         FOREIGN KEY (orderId) REFERENCES orders(id),
         FOREIGN KEY (menuItemId) REFERENCES menu_items(id)
+      )
+    `);
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId INTEGER NOT NULL,
+        action TEXT NOT NULL,
+        details TEXT,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id)
+      )
+    `);
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        userId INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        read INTEGER DEFAULT 0,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users(id)
       )
     `);
 
@@ -78,6 +103,16 @@ function seedData() {
       db.run(
         "INSERT INTO users (name, email, password, role, studentId, balance) VALUES (?, ?, ?, ?, ?, ?)",
         ['Demo Student', 'student@nsu.edu', studentPassword, 'customer', 'STU001', 500]
+      );
+    }
+  });
+
+  db.get("SELECT id FROM users WHERE email = 'vendor@nsu.edu'", (err, row) => {
+    if (!row) {
+      const vendorPassword = bcrypt.hashSync('vendor123', 10);
+      db.run(
+        "INSERT INTO users (name, email, password, role, studentId, balance) VALUES (?, ?, ?, ?, ?, ?)",
+        ['Main Cafeteria Vendor', 'vendor@nsu.edu', vendorPassword, 'vendor', 'VEND001', 0]
       );
     }
   });

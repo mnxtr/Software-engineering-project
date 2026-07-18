@@ -44,10 +44,22 @@ router.post('/', authenticateToken, (req, res) => {
       createOrder();
     }
 
+    function generateToken() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let token = '';
+      for (let i = 0; i < 6; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return token;
+    }
+
     function createOrder() {
+      const token = generateToken();
+      const estimatedMinutes = 15;
+
       db.run(
-        "INSERT INTO orders (userId, totalAmount, status, paymentMethod, paymentStatus) VALUES (?, ?, 'pending', ?, ?)",
-        [req.user.id, totalAmount, paymentMethod, paymentMethod === 'balance' ? 'paid' : 'unpaid'],
+        "INSERT INTO orders (userId, totalAmount, status, paymentMethod, paymentStatus, token, estimatedMinutes) VALUES (?, ?, 'pending', ?, ?, ?, ?)",
+        [req.user.id, totalAmount, paymentMethod, paymentMethod === 'balance' ? 'paid' : 'unpaid', token, estimatedMinutes],
         function(err) {
           if (err) {
             return res.status(500).json({ error: 'Failed to create order' });
@@ -65,10 +77,17 @@ router.post('/', authenticateToken, (req, res) => {
           orderItems.forEach(item => stmt.run(item.orderId, item.menuItemId, item.quantity, item.price));
           stmt.finalize();
 
+          db.run(
+            "INSERT INTO audit_logs (userId, action, details) VALUES (?, ?, ?)",
+            [req.user.id, 'place_order', `Order #${orderId} placed for ৳${totalAmount} (Token: ${token})`]
+          );
+
           res.status(201).json({
             orderId,
             totalAmount,
             status: 'pending',
+            token,
+            estimatedMinutes,
             message: 'Order placed successfully'
           });
         }

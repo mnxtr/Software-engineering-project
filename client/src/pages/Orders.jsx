@@ -8,6 +8,8 @@ export default function Orders() {
 
   useEffect(() => {
     fetchOrders();
+    const interval = setInterval(fetchOrders, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchOrders = async () => {
@@ -60,6 +62,28 @@ export default function Orders() {
     });
   };
 
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'pending': return 'var(--warning)';
+      case 'preparing': return '#1976D2';
+      case 'ready': return 'var(--success)';
+      case 'completed': return '#616161';
+      case 'cancelled': return 'var(--error)';
+      default: return 'var(--text-light)';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'pending': return '⏳';
+      case 'preparing': return '👨‍🍳';
+      case 'ready': return '✅';
+      case 'completed': return '✔️';
+      case 'cancelled': return '❌';
+      default: return '📋';
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading orders...</div>;
   }
@@ -69,6 +93,9 @@ export default function Orders() {
       <div className="empty-state">
         <h3>No orders yet</h3>
         <p>You haven't placed any orders yet.</p>
+        <button className="btn btn-primary" onClick={() => window.location.href = '/menu'} style={{ marginTop: '20px' }}>
+          Browse Menu
+        </button>
       </div>
     );
   }
@@ -83,13 +110,51 @@ export default function Orders() {
         {orders.map(order => (
           <div key={order.id} className="order-card">
             <div className="order-header">
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span className="order-id">Order #{order.id}</span>
-                <span className={`order-status ${order.status}`}>{order.status}</span>
+                <span className={`order-status ${order.status}`}>
+                  {getStatusIcon(order.status)} {order.status}
+                </span>
+                {order.token && (
+                  <span style={{
+                    padding: '4px 10px', background: '#FFF3E0',
+                    borderRadius: '6px', fontSize: '0.85rem', fontWeight: 700,
+                    fontFamily: 'monospace', letterSpacing: '1px'
+                  }}>
+                    🎫 {order.token}
+                  </span>
+                )}
               </div>
-              <span style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>
+              <span style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>
                 {formatDate(order.createdAt)}
               </span>
+            </div>
+
+            {order.status !== 'cancelled' && order.status !== 'completed' && order.estimatedMinutes && (
+              <div style={{
+                marginBottom: '12px', padding: '10px 14px',
+                background: '#E3F2FD', borderRadius: '8px',
+                display: 'flex', alignItems: 'center', gap: '10px',
+                fontSize: '0.9rem'
+              }}>
+                <span style={{ fontSize: '1.2rem' }}>⏱️</span>
+                <span>Estimated preparation time: <strong>{order.estimatedMinutes} minutes</strong></span>
+              </div>
+            )}
+
+            <div style={{
+              marginBottom: '12px', height: '6px', background: 'var(--border)',
+              borderRadius: '3px', overflow: 'hidden'
+            }}>
+              <div style={{
+                height: '100%',
+                width: order.status === 'completed' || order.status === 'ready' ? '100%'
+                  : order.status === 'preparing' ? '60%'
+                  : order.status === 'pending' ? '20%' : '0%',
+                background: getStatusColor(order.status),
+                borderRadius: '3px',
+                transition: 'width 0.5s ease'
+              }} />
             </div>
 
             {order.items && order.items.length > 0 && (
@@ -104,10 +169,15 @@ export default function Orders() {
 
             <div className="order-footer">
               <div>
-                <span className="order-total">৳{order.totalAmount}</span>
+                <span className="order-total">৳{order.totalAmount.toFixed(2)}</span>
                 {order.paymentStatus === 'unpaid' && (
-                  <span style={{ marginLeft: '15px', color: 'var(--error)', fontSize: '0.9rem' }}>
+                  <span style={{ marginLeft: '15px', color: 'var(--error)', fontSize: '0.9rem', fontWeight: 600 }}>
                     Unpaid
+                  </span>
+                )}
+                {order.paymentStatus === 'paid' && (
+                  <span style={{ marginLeft: '15px', color: 'var(--success)', fontSize: '0.9rem', fontWeight: 600 }}>
+                    Paid
                   </span>
                 )}
               </div>

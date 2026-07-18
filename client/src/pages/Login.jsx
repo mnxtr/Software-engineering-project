@@ -70,6 +70,7 @@ export default function Login() {
         <div style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '8px', fontSize: '0.85rem' }}>
           <strong>Demo Accounts:</strong><br />
           Admin: admin@nsu.edu / admin123<br />
+          Vendor: vendor@nsu.edu / vendor123<br />
           Student: student@nsu.edu / student123
         </div>
       </div>

@@ -649,3 +649,86 @@ body {
     padding: 10px 12px;
   }
 }
+
+/* Service-discovery controls adapted to the NSU Companion domain. */
+.eyebrow {
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-header > p:last-child {
+  color: var(--text-light);
+  max-width: 680px;
+}
+
+.menu-toolbar {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.menu-search input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font: inherit;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.menu-search input:focus,
+.filter-btn:focus-visible,
+.add-btn:focus-visible {
+  outline: 3px solid rgba(212, 56, 127, 0.25);
+  outline-offset: 2px;
+}
+
+.menu-toolbar .menu-filters {
+  margin-bottom: 0;
+}
+
+.menu-results {
+  color: var(--text-light);
+  margin-bottom: 18px;
+}
+
+.category-label {
+  color: var(--primary-dark);
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.error-panel {
+  align-items: center;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 10px;
+  color: #b71c1c;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 16px;
+}
+
+.error-panel .btn {
+  width: auto;
+}
+
+.sr-only {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

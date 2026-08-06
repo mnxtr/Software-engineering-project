@@ -11,7 +11,6 @@
 
 [🚀 Getting Started](#-getting-started) • [📅 Timeline](#-project-timeline) • [👥 Team](#-team-members--roles) • [📚 Docs](#-documentation)
 
-</div>
 
 ---
 
@@ -31,6 +30,21 @@ A **comprehensive digital ecosystem** connecting three user types:
 | Place pre-orders | Track incoming orders | Manage users & permissions |
 | Secure payments | View real-time sales analytics | Monitor operations |
 | Collect with unique tokens | Control item availability | Generate reports & audit logs |
+
+---
+
+## ✅ Current implementation
+
+The runnable code currently uses a **React + Vite client**, an **Express API**, and **SQLite**. Features that are still planned are identified separately in the roadmap; they are not presented as already deployed.
+
+- Searchable, category-filtered live menu
+- Customer registration and JWT login
+- Cart and pre-order workflow
+- Order status and pickup tokens
+- Vendor and administrator dashboards
+- Audit logs and local database seed data
+
+See [Reference Adaptation](docs/REFERENCE_ADAPTATION.md) for the boundary between the project's original design and patterns adapted from the sample repository.
 
 ---
 
@@ -490,5 +504,3 @@ Made with ❤️ by the NSU Companion Team
 [Project Timeline](docs/Gantt_Chart.md)
 
 Happy Coding! 🚀
-
-> Note: I can only provide the content directly in chat. To use this as your `README.md`, copy the code block above and paste it into your `README.md` file in your repository, then commit and push.

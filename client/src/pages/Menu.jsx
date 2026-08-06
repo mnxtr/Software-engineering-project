@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useCart } from '../context/CartContext';
 
 export default function Menu() {
   const [menuItems, setMenuItems] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(['All']);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    fetchMenu();
-    fetchCategories();
-  }, []);
-
   const fetchMenu = async () => {
+    setLoading(true);
+    setError('');
+
     try {
-      const res = await fetch('/api/menu?available=1');
-      const data = await res.json();
-      setMenuItems(data);
-    } catch (err) {
-      console.error('Failed to fetch menu:', err);
+      const response = await fetch('/api/menu?available=true');
+      if (!response.ok) throw new Error('The cafeteria menu is unavailable right now.');
+      setMenuItems(await response.json());
+    } catch (requestError) {
+      setError(requestError.message);
     } finally {
       setLoading(false);
     }
@@ -27,64 +27,124 @@ export default function Menu() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/menu/categories');
-      const data = await res.json();
-      setCategories(['All', ...data]);
-    } catch (err) {
-      console.error('Failed to fetch categories:', err);
+      const response = await fetch('/api/menu/categories');
+      if (!response.ok) throw new Error('Failed to load menu categories.');
+      setCategories(['All', ...await response.json()]);
+    } catch (requestError) {
+      setError(current => current || requestError.message);
     }
   };
 
-  const filteredItems = selectedCategory === 'All'
-    ? menuItems
-    : menuItems.filter(item => item.category === selectedCategory);
+  useEffect(() => {
+    fetchMenu();
+    fetchCategories();
+  }, []);
+
+  const filteredItems = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+
+    return menuItems.filter(item => {
+      const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+      const searchableText = [item.name, item.description, item.category].filter(Boolean).join(' ').toLowerCase();
+      return matchesCategory && (!query || searchableText.includes(query));
+    });
+  }, [menuItems, searchTerm, selectedCategory]);
 
   if (loading) {
-    return <div className="loading">Loading menu...</div>;
+    return <div className="loading" role="status">Loading menu...</div>;
   }
 
   return (
-    <div>
+    <main>
       <div className="page-header">
-        <h1>Menu</h1>
+        <p className="eyebrow">Cafeteria services</p>
+        <h1>Find your next meal</h1>
+        <p>Search available items, compare categories, and add your choice to a pre-order.</p>
       </div>
 
-      <div className="menu-filters">
-        {categories.map(category => (
-          <button
-            key={category}
-            className={`filter-btn ${selectedCategory === category ? 'active' : ''}`}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category}
-          </button>
-        ))}
-      </div>
+      <section className="menu-toolbar" aria-label="Menu search and filters">
+        <label className="menu-search">
+          <span className="sr-only">Search the cafeteria menu</span>
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={event => setSearchTerm(event.target.value)}
+            placeholder="Search by item, description, or category"
+          />
+        </label>
 
-      {filteredItems.length === 0 ? (
+        <div className="menu-filters" aria-label="Filter menu by category">
+          {categories.map(category => (
+            <button
+              key={category}
+              type="button"
+              className={`filter-btn ${selectedCategory === category ? 'active' : ''}`}
+              aria-pressed={selectedCategory === category}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {error && (
+        <div className="error-panel" role="alert">
+          <p>{error}</p>
+          <button type="button" className="btn btn-secondary" onClick={fetchMenu}>Try again</button>
+        </div>
+      )}
+
+      {!error && (
+        <p className="menu-results" aria-live="polite">
+          {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} available
+        </p>
+      )}
+
+      {!error && filteredItems.length === 0 ? (
         <div className="empty-state">
-          <h3>No items found</h3>
-          <p>No menu items available in this category.</p>
+          <h2>No matching items</h2>
+          <p>Try a different search term or select another category.</p>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              setSearchTerm('');
+              setSelectedCategory('All');
+            }}
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <div className="menu-grid">
           {filteredItems.map(item => (
-            <div key={item.id} className="menu-card">
-              <img src={item.imageUrl || 'https://via.placeholder.com/300x180?text=No+Image'} alt={item.name} />
+            <article key={item.id} className="menu-card">
+              <img
+                src={item.imageUrl || 'https://via.placeholder.com/300x180?text=No+Image'}
+                alt=""
+                loading="lazy"
+              />
               <div className="menu-card-content">
-                <h3>{item.name}</h3>
-                <p className="description">{item.description}</p>
+                <span className="category-label">{item.category}</span>
+                <h2>{item.name}</h2>
+                <p className="description">{item.description || 'No description provided.'}</p>
                 <div className="menu-card-footer">
-                  <span className="price">৳{item.price}</span>
-                  <button className="add-btn" onClick={() => addToCart(item)}>
-                    Add to Cart
+                  <span className="price">৳{Number(item.price).toFixed(2)}</span>
+                  <button
+                    type="button"
+                    className="add-btn"
+                    onClick={() => addToCart(item)}
+                    aria-label={`Add ${item.name} to cart`}
+                  >
+                    Add to cart
                   </button>
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
-    </div>
+    </main>
   );
 }

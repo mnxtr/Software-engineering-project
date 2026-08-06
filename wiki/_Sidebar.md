@@ -3,6 +3,7 @@
 - [Home](Home)
 - [Getting Started](Getting-Started)
 - [User Guide](User-Guide)
+- [Software Requirements](Software-Requirements-Specification)
 
 ### Technical
 

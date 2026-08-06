@@ -1,86 +1,89 @@
-# 🍽️ NSU Companion Wiki
+# NSU Companion
 
-Welcome to the **NSU Companion** documentation wiki — a smart cafeteria management and pre-ordering system built for **North South University (NSU)**.
+> **Smart cafeteria discovery and pre-ordering for North South University**  
+> Browse live menus, skip physical queues, track preparation, and collect orders with a pickup token.
 
-## Quick Links
+[Get started](Getting-Started) · [Use the app](User-Guide) · [Explore the API](API-Documentation) · [Contribute](Developer-Guide)
 
-| Page | Description |
-|------|-------------|
-| [Getting Started](Getting-Started) | Setup instructions, prerequisites, and first run |
-| [Architecture](Architecture) | System design, tech stack, and component diagram |
-| [API Documentation](API-Documentation) | All REST endpoints with request/response examples |
-| [Database Schema](Database-Schema) | Entity relationships, table definitions, and seed data |
-| [User Guide](User-Guide) | Walkthroughs for Students, Vendors, and Admins |
-| [Developer Guide](Developer-Guide) | Branching strategy, commit conventions, PR workflow |
-| [Deployment Guide](Deployment-Guide) | Production deployment to AWS / Azure / on-campus server |
+---
 
-## Overview
+## Choose your path
 
-NSU Companion eliminates long physical queues at the NSU cafeteria by connecting three user types through a comprehensive digital ecosystem:
+| I am a… | Start here | Main workflow |
+| --- | --- | --- |
+| Student or faculty member | [User Guide — Customer](User-Guide#student--faculty-guide) | Search menu → add to cart → place order → track pickup |
+| Cafeteria vendor | [User Guide — Vendor](User-Guide#vendor-guide) | Review orders → prepare → mark ready → complete |
+| Administrator | [User Guide — Administrator](User-Guide#administrator-guide) | Monitor users, menu, orders, revenue, and audit logs |
+| Developer | [Getting Started](Getting-Started) | Install → run client/server → verify demo flows |
+| Reviewer or instructor | [Architecture](Architecture) | Review scope, roles, data model, API, and project status |
 
-- **👤 Students & Faculty** — Browse live menus, place pre-orders, pay with balance or cash, collect with unique tokens
-- **🏪 Vendors** — Manage menus, track incoming orders, update preparation status, view real-time sales analytics
-- **⚙️ Administrators** — Configure system settings, manage users and permissions, monitor operations, generate audit reports
+## What the system does
 
-## Tech Stack
+NSU Companion keeps one focused idea: reduce cafeteria queues through digital menu discovery and pre-ordering.
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | React 18, Vite, React Router, CSS3 |
-| **Backend** | Node.js, Express.js |
-| **Database** | SQLite (dev) / MySQL 8.0+ (production) |
-| **Authentication** | JWT (JSON Web Tokens) with bcrypt |
-| **Payments** | Balance system, Cash on Delivery, SSLCommerz & bKash (sandbox) |
-| **Notifications** | In-app alerts, Firebase Cloud Messaging (planned) |
+| Capability | Customer | Vendor | Admin |
+| --- | :---: | :---: | :---: |
+| Search and filter available menu items | ✓ | ✓ | ✓ |
+| Build a cart and submit a pre-order | ✓ | — | — |
+| Track order status and pickup token | ✓ | ✓ | ✓ |
+| Process incoming orders | — | ✓ | ✓ |
+| Manage menu availability and pricing | — | ✓ | ✓ |
+| Review users, analytics, and audit logs | — | — | ✓ |
 
-## Demo Accounts
+## Current implementation
 
-| Role | Email | Password |
-|------|-------|----------|
-| 👑 **Admin** | admin@nsu.edu | admin123 |
-| 🏪 **Vendor** | vendor@nsu.edu | vendor123 |
-| 👤 **Student** | student@nsu.edu | student123 |
+| Layer | Technology | Status |
+| --- | --- | --- |
+| Web client | React 18, Vite, React Router, CSS | Implemented |
+| API | Node.js and Express | Implemented |
+| Data | SQLite | Implemented for development |
+| Authentication | JWT and bcrypt | Implemented |
+| Menu discovery | Search, categories, availability filtering | Implemented |
+| Payments | Balance and cash workflow | Prototype |
+| External gateways | SSLCommerz and bKash sandbox | Planned |
+| Push notifications | Firebase Cloud Messaging | Planned |
+| Production database | MySQL migration | Planned |
 
-## Project Structure
+> Status labels distinguish runnable code from roadmap items. See the relevant page before treating a planned integration as available.
 
-```
-nsu-cafeteria/
-├── server/                  # Express.js backend
-│   ├── src/
-│   │   ├── config/         # Database configuration
-│   │   ├── middleware/      # Auth & validation middleware
-│   │   ├── routes/         # API route handlers
-│   │   └── index.js        # Entry point
-│   └── package.json
-├── client/                  # React frontend
-│   ├── src/
-│   │   ├── components/     # Shared components (Navbar)
-│   │   ├── context/        # Auth & Cart React contexts
-│   │   ├── pages/          # Page components
-│   │   ├── App.jsx         # Root component with routing
-│   │   ├── main.jsx        # Entry point
-│   │   └── index.css       # Global styles
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
-└── wiki/                    # This documentation
+## System at a glance
+
+```mermaid
+flowchart TD
+    U[Student, vendor, or admin] --> C[React client]
+    C --> A[Express API]
+    A --> M[JWT and role checks]
+    M --> D[(SQLite database)]
+    A --> S[Auth, menu, order, vendor, admin routes]
 ```
 
-## Features
+## Core documentation
 
-- **Real-time Menu Management** — Dynamic pricing and live item availability
-- **Secure Payment Gateway** — Balance system, Cash on Delivery, SSLCommerz & bKash
-- **Push Notifications** — Real-time order status updates (in-app, FCM planned)
-- **Order Tracking** — Live preparation status with progress bars and estimated timers
-- **Unique Order Tokens** — Secure 6-character pickup identification system
-- **Vendor Dashboard** — Analytics, order management, menu control with 6 stat cards
-- **Admin Panel** — System-wide stats, user management, audit logs, 9 overview metrics
-- **Mobile Responsive** — Seamless experience across all devices
+| Page | Use it for |
+| --- | --- |
+| [Getting Started](Getting-Started) | Prerequisites, installation, configuration, first run, troubleshooting |
+| [User Guide](User-Guide) | Step-by-step customer, vendor, and administrator workflows |
+| [Architecture](Architecture) | Components, routes, data flow, access boundaries, technical decisions |
+| [API Documentation](API-Documentation) | REST endpoints and request/response examples |
+| [Database Schema](Database-Schema) | Tables, relations, seed data, and indexes |
+| [Developer Guide](Developer-Guide) | Branches, commits, reviews, and contribution standards |
+| [Deployment Guide](Deployment-Guide) | Production build, reverse proxy, hosting, health checks, rollback |
+| [Reference Adaptation](Reference-Adaptation) | What was learned from the sample and what was intentionally excluded |
 
-## Contact
+## Quick verification
 
-- **Project Lead**: Mohammad Mansib Newaz
-- **Tech Lead**: Faroque Hossain Rumi
-- **Operations Lead**: Mohammad Hasibur Rahman
-- **Course**: CSE327 Software Engineering — Fall 2026
-- **University**: North South University
+After following [Getting Started](Getting-Started), verify:
+
+1. `GET /api/health` returns a successful response.
+2. The menu loads and can be searched or filtered.
+3. A customer can register, sign in, add an item, and place an order.
+4. A vendor can advance that order through preparation statuses.
+5. An administrator can view system metrics and audit activity.
+
+## Project boundary
+
+The [COVID-19 Help Service Application](https://github.com/Abrar-Sultan/covid-19_help_service_application) is used only as a reference for feature separation, searchable service listings, shared navigation, and role-specific workflows. NSU Companion does **not** copy its healthcare domain, Django implementation, medical data fields, assets, branding, or source code.
+
+---
+
+**Course:** CSE327 Software Engineering · **University:** North South University · **Status:** Active development

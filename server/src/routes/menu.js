@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 
   if (available !== undefined) {
     query += " AND available = ?";
-    params.push(available === 'true' ? 1 : 0);
+    params.push(available === 'true' || available === '1' ? 1 : 0);
   }
 
   query += " ORDER BY category, name";
